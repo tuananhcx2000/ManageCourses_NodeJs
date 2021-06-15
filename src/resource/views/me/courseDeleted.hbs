@@ -1,0 +1,85 @@
+<div class="container mt-5">
+    <h3>Courses Deleted</h3>
+    <a href="/me/course" class="btn btn-link btn-danger text-light" style="text-decoration: none;">My Courses
+    </a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name's Course</th>
+                <th scope="col">Time created</th>
+                <th scope="col">Slug</th>
+                <th scope="col" colspan="2" class="widthTb">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                {{!-- //thuc thi ham kieu nay --}}
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>{{this.slug}}</td>
+                <td>
+                    <a class="btn btn-link btn-restore" href="" data-id="{{this._id}}">Restore</a>
+                    <a class="btn btn-link" href="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        data-id="{{this._id}}">Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr class="text-center">
+                <td colspan="5">No data <a href="/me/course">Back to List Courses</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are You Sure</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are You Sure Want To Delete This Course?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Cancel</button>
+                <button id="deleteBtn" type="button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{!-- hide form --}}
+<form id="hideForm" method="POST" action=""></form>
+<form id="hideFormRestore" method="POST" action=""></form>
+
+<script>
+    var exampleModal = document.getElementById('exampleModal');
+    var hideForm = document.querySelector('#hideForm');
+    var hideFormRestore = document.querySelector('#hideFormRestore');
+    var deleteBtn = document.querySelector('#deleteBtn');
+    var idCourse;
+    var btnRestores = document.querySelectorAll('.btn-restore')
+    //lap khoa hoc da xoa
+    for (let btn of btnRestores) {
+        btn.onclick = function (e) {
+            e.preventDefault()
+            let idRes = btn.getAttribute('data-id')
+
+            hideFormRestore.setAttribute('action', `/course/${idRes}/restore`)
+            hideFormRestore.submit()
+        }
+    }
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget
+        idCourse = button.getAttribute('data-id')
+        deleteBtn.onclick = function () {
+            hideForm.setAttribute('action', `/course/${idCourse}/ForceDelete`)
+            hideForm.submit();
+        }
+    })
+</script>

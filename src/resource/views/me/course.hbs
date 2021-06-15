@@ -1,0 +1,145 @@
+<form class="container mt-5" method="POST" action="/course/handle-select-event">
+    <h3>My Courses Massager</h3>
+    <a href="trash/course" class="btn btn-link btn-danger text-light" style="text-decoration: none;">Courses
+        Deleted({{courseDeleted}})</a>
+    <h3>{{userName}}</h3>
+    <div id="submitForm" class="container mt-4 d-flex align-items-center justify-content-end">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="checkedAll">
+            <label class="form-check-label" for="checkedAll">
+                Choose All
+            </label>
+        </div>
+
+        <select class="form-select select" aria-label="Default select example" name="action">
+            <option value="" selected>Choose Function</option>
+            <option value="delete">Delete</option>
+            <option value="update">Update</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary disabled btnPerform">Perform</button>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">#</th>
+                <th scope="col" class='w-100px '>
+                    Name's Course
+                    {{{sort 'name' _sort}}}
+                </th>
+                <th scope="col">Time created
+                    {{{sort 'timeCreate' _sort}}}
+                </th>
+                <th scope="col">Slug</th>
+                <th scope="col" colspan="2" class="widthTb">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                {{!-- //thuc thi ham kieu nay --}}
+                <td>
+                    <input class="form-check-input checkChild" name="courseId" type="checkbox" value="{{this._id}}"
+                        id="{{this._id}}">
+                </td>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>{{this.slug}}</td>
+                <td>
+                    <a class="btn btn-link" href="/course/{{this._id}}/edit">Update</a>
+                    <a class="btn btn-link" href="" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        data-id="{{this._id}}">Delete</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr class="text-center">
+                <td colspan="5">No data <a href="/course/create">Click this to create new course</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Are You Sure</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are You Sure Want To Delete This Course?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary">Cancel</button>
+                <button id="deleteBtn" type="button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{!-- hide form --}}
+<form id="hideForm" method="POST" action=""></form>
+
+<script>
+    var exampleModal = document.getElementById('exampleModal');
+    var hideForm = document.querySelector('#hideForm');
+    var deleteBtn = document.querySelector('#deleteBtn');
+    var idCourse;
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget
+        idCourse = button.getAttribute('data-id')
+        deleteBtn.onclick = function () {
+            hideForm.setAttribute('action', `/course/${idCourse}/delete`)
+            hideForm.submit();
+        }
+    })
+
+    //handle checkAll
+    var checkedAll = document.querySelector('#checkedAll')
+    var checkChild = document.querySelectorAll('.checkChild')
+    let btnPerform = document.querySelector('.btnPerform')
+    let submitForm = document.querySelector('#submitForm')
+    submitForm.onsubmit = function (e) {
+        e.preventDefault()
+
+    }
+    checkedAll.onchange = function (e) {
+        let isChecked = checkedAll.checked;
+        for (var check of checkChild) {
+            check.checked = isChecked;
+        }
+        renderBtn()
+    }
+    for (let check of checkChild) {
+        let countAll = checkChild.length
+        //console.log(countAll)
+        check.onchange = function (e) {
+            let countChild = document.querySelectorAll('.checkChild:checked').length
+            renderBtn();
+            //console.log(btnPerform)
+            if (countAll === countChild) {
+                checkedAll.checked = true
+            }
+            else {
+                checkedAll.checked = false
+            }
+        }
+    }
+    function renderBtn() {
+
+        let countChild = document.querySelectorAll('.checkChild:checked').length
+        console.log(countChild)
+        if (countChild > 0) {
+            btnPerform.classList.remove('disabled')
+            btnPerform.onclick = function (e) {
+                submitForm.submit()
+            }
+        }
+        else {
+            btnPerform.classList.add('disabled')
+        }
+    }
+</script>
