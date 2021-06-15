@@ -1,7 +1,7 @@
 //khai bao thu vien
 require('dotenv').config();
 const express = require('express');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const handlebars = require('express-handlebars');
 const sortMiddleware = require('./app/middlewares/sortMiddlewares');
 const cookieParser = require('cookie-parser');
@@ -15,7 +15,7 @@ const db = require('./config/db');
 db.connect();
 
 const route = require('./routes/index'); //k can viet index vi nos tu dong tim den index r
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
 //http logger
