@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
     "begin": "nodemon --inspect src/index.js",
+    "start": "node src/index.js",
     "beautiful": "lint-staged",
     "watch": "node-sass --watch src/resource/scss --output src/public/css",
     "test": "echo \"Error: no test specified\" && exit 1"
